@@ -1,4 +1,3 @@
-import jdk.jfr.Description;
 
 import java.net.*;
 import java.io.*;
@@ -7,7 +6,7 @@ import java.io.*;
 public class SocketLibrary{
 
 
-    private static class ClientHandler extends Thread{
+    public static class ClientHandler extends Thread{
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
@@ -15,10 +14,9 @@ public class SocketLibrary{
 
         public ClientHandler(Socket socket){
             this.clientSocket = socket;
-            manageMessage();
         }
 
-        public void manageMessage(){
+        public void run(){
             try{
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -36,10 +34,10 @@ public class SocketLibrary{
 
     }
 
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private PrintWriter out;
-    private BufferedReader in;
+    protected ServerSocket serverSocket;
+    protected Socket clientSocket;
+    protected PrintWriter out;
+    protected BufferedReader in;
 
 
     public void startServer(int port){
@@ -90,6 +88,7 @@ public class SocketLibrary{
         catch(IOException e){
             e.printStackTrace();
         }
+
 
     }
 
