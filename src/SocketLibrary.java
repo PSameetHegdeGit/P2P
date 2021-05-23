@@ -103,19 +103,25 @@ public class SocketLibrary{
         }
     }
 
-    public void sendMessage(){
+    public void sendMessage(boolean broadcast){
 
-        System.out.println("Enter message to Send:");
-
-        try{
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            String line = br.readLine();
-            out.println(line);
-            System.out.println("Response: " + in.readLine());
-
+        if (broadcast){
+            out.println("THIS IS A BROADCAST MESSAGE!");
         }
-        catch(IOException e){
-            e.printStackTrace();
+        else{
+            System.out.println("Enter message to Send:");
+
+            try{
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                String line = br.readLine();
+                out.println(line);
+                System.out.println("Response: " + in.readLine());
+
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
+
         }
 
 

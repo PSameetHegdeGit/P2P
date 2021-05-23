@@ -4,16 +4,18 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.io.IOException;
 
+
 public class Peer extends SocketLibrary implements Runnable {
 
-    ArrayList<InetAddress> peers_in_network = new ArrayList<InetAddress>();
+
+    ArrayList<Tuple<String, Integer>> peers_in_network = new ArrayList<>();
 
     public static void main(String [] args){
 
         Peer p = new Peer();
 
         p.startConnection("localhost", 5000);
-        p.sendMessage();
+        p.sendMessage(false);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter Port no: ");
@@ -52,10 +54,10 @@ public class Peer extends SocketLibrary implements Runnable {
                     System.out.println("Enter host: ");
                     String host = br.readLine();
                     startConnection(host, portno);
-                    sendMessage();
+                    sendMessage(false);
 
-                case "s":
-                    break;
+                case "b":
+                    Broadcast();
 
                 default:
                     break;
@@ -68,11 +70,9 @@ public class Peer extends SocketLibrary implements Runnable {
 
     }
 
-    /*
-     Broadcast message to all peers in network to make them aware 
-     */
-    public void Broadcast(){
 
+    public void Broadcast(){
+        peers_in_network.forEach((peer_info) -> new Thread(new BroadcastFactory(this, peer_info)).start());
     }
 
 }
