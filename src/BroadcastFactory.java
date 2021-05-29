@@ -11,9 +11,11 @@ public class BroadcastFactory extends SocketLibrary implements Runnable{
     }
 
     public void run(){
+        System.out.println("port: " + peer_info.port);
         System.out.println("Broadcasting message!");
         p.startConnection(peer_info.host, peer_info.port);
-        p.sendMessage(true);
+
+        p.sendMessage(0);
 
     }
 

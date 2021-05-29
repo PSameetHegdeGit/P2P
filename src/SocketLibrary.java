@@ -1,6 +1,7 @@
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 
 
 public class SocketLibrary{
@@ -20,10 +21,22 @@ public class SocketLibrary{
             try{
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
                 String line = in.readLine();
                 System.out.println(line);
-                out.println("Message Received: " + line);
+
+                switch(line){
+                    case "broadcast":
+                        out.println("WILL BROADCAST!");
+                        
+                    case "getArraylist":
+                        out.println("WILL GET ARRAYLIST!");
+                    default:
+                        out.println("Message Received: " + line);
+
+
+                }
+
+
             }
             catch(IOException e){
                 e.printStackTrace();
@@ -103,28 +116,53 @@ public class SocketLibrary{
         }
     }
 
-    public void sendMessage(boolean broadcast){
 
-        if (broadcast){
-            out.println("THIS IS A BROADCAST MESSAGE!");
+
+    //Methods and Variables need for communication between peers
+
+    ArrayList<Tuple<String, Integer>> peers_in_network = new ArrayList<>();
+
+
+    public void sendMessage(int type){
+
+        /*
+            if type = 0, broadcast
+            if type=1, get arraylist
+            if type=2, send String message
+
+         */
+
+        BufferedReader br;
+        String line;
+
+        try{
+            switch(type){
+                case 0:
+                    out.println("broadcast");
+                    System.out.println("Response: " + in.readLine());
+
+                case 1:
+                    out.println("getArraylist");
+                    System.out.println("Response: " + in.readLine());
+
+                case 2:
+                    System.out.println("Enter message to Send:");
+                    br = new BufferedReader(new InputStreamReader(System.in));
+                    line = br.readLine();
+                    out.println(line);
+                    System.out.println("Response: " + in.readLine());
+
+            }
+
         }
-        else{
-            System.out.println("Enter message to Send:");
-
-            try{
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                String line = br.readLine();
-                out.println(line);
-                System.out.println("Response: " + in.readLine());
-
-            }
-            catch(IOException e){
-                e.printStackTrace();
-            }
-
+        catch(IOException e){
+            e.printStackTrace();
         }
 
 
     }
+
+
+
 
 }

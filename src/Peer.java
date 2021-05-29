@@ -8,16 +8,23 @@ import java.io.IOException;
 public class Peer extends SocketLibrary implements Runnable {
 
 
-    ArrayList<Tuple<String, Integer>> peers_in_network = new ArrayList<>();
 
     public static void main(String [] args){
 
         Peer p = new Peer();
 
+        //Testing Peer Broadcast
+        p.peers_in_network.add(new Tuple<>("localhost", 5002));
+        p.peers_in_network.add(new Tuple<>("localhost", 5003));
+        /////////////////////////////////
+
         p.startConnection("localhost", 5000);
-        p.sendMessage(false);
+
+        //Request Arraylist
+        p.sendMessage(1);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         System.out.println("Enter Port no: ");
 
         try {
@@ -54,7 +61,7 @@ public class Peer extends SocketLibrary implements Runnable {
                     System.out.println("Enter host: ");
                     String host = br.readLine();
                     startConnection(host, portno);
-                    sendMessage(false);
+                    sendMessage(2);
 
                 case "b":
                     Broadcast();
@@ -70,9 +77,10 @@ public class Peer extends SocketLibrary implements Runnable {
 
     }
 
-
     public void Broadcast(){
         peers_in_network.forEach((peer_info) -> new Thread(new BroadcastFactory(this, peer_info)).start());
     }
+
+
 
 }
