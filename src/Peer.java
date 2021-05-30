@@ -1,8 +1,6 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.io.IOException;
 
 
 public class Peer extends SocketLibrary implements Runnable {
@@ -13,28 +11,15 @@ public class Peer extends SocketLibrary implements Runnable {
 
         Peer p = new Peer();
 
-        //Testing Peer Broadcast
-        p.peers_in_network.add(new Tuple<>("localhost", 5002));
-        p.peers_in_network.add(new Tuple<>("localhost", 5003));
-        /////////////////////////////////
-
         p.startConnection("localhost", 5000);
 
-        //Request Arraylist
-        p.sendMessage(1);
+        //Startup
+        p.sendMessage(3);
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        p.peers_in_network.forEach((i) -> System.out.println("peer info: " + i.host + " " + i.port));
 
-        System.out.println("Enter Port no: ");
-
-        try {
-            int portno = Integer.parseInt(br.readLine());
-            new Thread(p).start();
-            p.startServer(portno);
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
+        new Thread(p).start();
+        p.startServer(p.portno);
 
 
 

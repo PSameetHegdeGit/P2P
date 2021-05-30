@@ -7,8 +7,6 @@ import java.util.ArrayList;
 
 public class ConnectingServer extends SocketLibrary{
 
-    ArrayList<Tuple<InetAddress, Integer>> peers_in_network = new ArrayList<>();
-
     public static void main(String [] args){
 
         ConnectingServer server = new ConnectingServer();
@@ -27,9 +25,8 @@ public class ConnectingServer extends SocketLibrary{
 
             while(true) {
                 Socket clientSocket = serverSocket.accept();
-                peers_in_network.add(new Tuple(clientSocket.getInetAddress().getHostAddress(), clientSocket.getPort()));
-                new ClientHandler(clientSocket).start();
-                peers_in_network.forEach((i) -> System.out.println(i));
+                new ClientHandler(clientSocket, peers_in_network).start();
+                peers_in_network.forEach((i) -> System.out.println(i.host + " " + i.port));
             }
         }
         catch(IOException e){
