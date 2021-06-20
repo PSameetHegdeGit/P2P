@@ -11,8 +11,7 @@ public class BroadcastFactory extends SocketLibrary implements Runnable{
     }
 
     public void run(){
-        System.out.println("port: " + peer_info.port);
-        System.out.println("Broadcasting message!");
+        System.out.println("Broadcasting message from " + peer_info.host + " " + peer_info.port );
         p.startConnection(peer_info.host, peer_info.port);
 
         p.sendMessage(0);

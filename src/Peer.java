@@ -18,6 +18,8 @@ public class Peer extends SocketLibrary implements Runnable {
 
         p.peers_in_network.forEach((i) -> System.out.println("peer info: " + i.host + " " + i.port));
 
+//        p.Broadcast();
+
         new Thread(p).start();
         p.startServer(p.portno);
 
@@ -50,6 +52,9 @@ public class Peer extends SocketLibrary implements Runnable {
 
                 case "b":
                     Broadcast();
+
+                case "output peers":
+                    peers_in_network.forEach((i) -> System.out.println("peer info: " + i.host + " " + i.port));
 
                 default:
                     break;

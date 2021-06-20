@@ -22,17 +22,29 @@ public class SocketLibrary{
         public void run(){
 
             ObjectOutputStream oos;
+            ObjectInputStream ois;
 
             try{
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String line = in.readLine();
-                System.out.println(line);
 
                 switch(line){
                     case "broadcast":
-                        out.println("WILL BROADCAST!");
+                        System.out.println("RECEIVED BROADCAST!");
+                        ois = new ObjectInputStream(clientSocket.getInputStream());
 
+
+                        try{
+                            Tuple<String, Integer> peer_info = (Tuple <String, Integer>) ois.readObject();
+                            System.out.println("client peer info: " + peer_info.host + " " + peer_info.port);
+                            peers_in_network.add(peer_info);
+                            out.println("SERVER " + clientSocket.getInetAddress().getHostName() + " " + clientSocket.getPort() + " RECEIVED YOUR INFO");
+
+                        }
+                        catch(ClassNotFoundException e){
+                            e.printStackTrace();
+                        }
 
                     case "getArraylist":
                         System.out.println("WILL GET ARRAYLIST!");
@@ -41,11 +53,11 @@ public class SocketLibrary{
 
                     case "startup":
                         System.out.println("FOR STARTUP!");
-                        ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+                        ois = new ObjectInputStream(clientSocket.getInputStream());
                         try{
                             Tuple<String, Integer> peer_info = (Tuple <String, Integer>) ois.readObject();
 
-                            System.out.println("client peer info: " + peer_info.host + " " + peer_info.port);
+//                            System.out.println("client peer info: " + peer_info.host + " " + peer_info.port);
 
                             oos = new ObjectOutputStream(clientSocket.getOutputStream());
                             oos.writeObject(peers_in_network);
@@ -76,6 +88,8 @@ public class SocketLibrary{
     protected PrintWriter out;
     protected BufferedReader in;
 
+
+    //Port number for server thread on peer
     int portno;
 
 
@@ -160,11 +174,16 @@ public class SocketLibrary{
 
         BufferedReader br;
         String line;
+        ObjectOutputStream oos;
 
         try{
             switch(type){
                 case 0:
                     out.println("broadcast");
+
+                    oos = new ObjectOutputStream(clientSocket.getOutputStream());
+                    oos.writeObject(new Tuple<> (clientSocket.getInetAddress().getHostAddress(), portno));
+
                     System.out.println("Response: " + in.readLine());
 
                 case 1:
@@ -182,7 +201,7 @@ public class SocketLibrary{
                     out.println("startup");
 
                     br = new BufferedReader(new InputStreamReader(System.in));
-                    ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+                    oos = new ObjectOutputStream(clientSocket.getOutputStream());
 
                     System.out.println("Enter Port no: ");
                     portno = Integer.parseInt(br.readLine());
