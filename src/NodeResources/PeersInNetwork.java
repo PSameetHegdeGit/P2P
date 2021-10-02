@@ -1,8 +1,9 @@
 package NodeResources;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PeersInNetwork {
+public class PeersInNetwork implements Serializable{
 
     private ArrayList<Tuple<String, Integer>> _list = new ArrayList<>();
 
@@ -10,15 +11,18 @@ public class PeersInNetwork {
         _list.forEach((peer_info) -> System.out.println("NodeTypes.Peer Info: " + peer_info.host + " " + peer_info.port));
     }
 
-    public ArrayList<Tuple<String, Integer>> Get(){
+    public ArrayList<Tuple<String, Integer>> Get()
+    {
         return _list;
     }
 
-    public void Set(ArrayList<Tuple<String, Integer>> peersInNetwork){
+    public void Set(ArrayList<Tuple<String, Integer>> peersInNetwork)
+    {
         this._list = peersInNetwork;
     }
 
-    public void Add(Tuple<String, Integer> item){
+    public void Add(Tuple<String, Integer> item)
+    {
         _list.add(item);
     }
 

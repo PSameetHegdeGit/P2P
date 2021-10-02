@@ -7,9 +7,8 @@ import NodeResources.*;
 
 public class Peer implements Runnable{
 
-    private Client client;
-    private Server server;
-
+    private Client _client;
+    private Server _server;
 
     public static void main(String [] args){
 
@@ -20,28 +19,29 @@ public class Peer implements Runnable{
 
         Peer p = new Peer(client, server);
 
-        p.client.sendMessage(3);
+        p._client.startConnection("localhost", ConnectingServer.GetConnectingServerPortNumber());
+        p._client.sendMessage(3);
 
         new Thread(p).start();
 
-        p.server.StartServer(Server.SpecifyServerPortNo());
-
-        p.client.startConnection("localhost", ConnectingServer.CONNECTING_SERVER_PORT_NO);
+        p._server.StartServer(p._client.GetPortNo());
 
     }
 
     public Peer(Client client, Server server){
-        this.client = client;
-        this.server = server;
+        this._client = client;
+        this._server = server;
     }
 
 
-    public Client GetClient(){
-        return client;
+    public Client GetClient()
+    {
+        return _client;
     }
 
-    public Server GetServer(){
-        return server;
+    public Server GetServer()
+    {
+        return _server;
     }
 
     public void run(){
@@ -61,11 +61,11 @@ public class Peer implements Runnable{
                         new Connect(this, null, null).Execute();
 
                     case "Broadcast":
-                        client.Broadcast();
+                        _client.Broadcast();
                         break;
 
                     case "output peers":
-                        client.peersInNetwork.OutputPeers();
+                        _client.peersInNetwork.OutputPeers();
                         break;
 
                     default:

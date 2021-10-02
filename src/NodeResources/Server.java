@@ -7,6 +7,7 @@ import Interfaces.IServer;
 
 public class Server implements IServer {
 
+
     private PeersInNetwork peersInNetwork;
     protected ServerSocket serverSocket;
 
@@ -15,7 +16,7 @@ public class Server implements IServer {
         this.peersInNetwork = peersInNetwork;
     }
 
-    public static int SpecifyServerPortNo()
+    /*public static int SpecifyServerPortNo()
     {
         System.out.println("Enter Port Number for Server: ");
         BufferedReader portReader = new BufferedReader(new InputStreamReader(System.in));
@@ -31,7 +32,7 @@ public class Server implements IServer {
         System.out.println(portno);
 
         return portno;
-    }
+    }*/
 
     @Override
     public void StartServer(int portno)
@@ -128,7 +129,7 @@ public class Server implements IServer {
 //                            System.out.println("client peer info: " + peer_info.host + " " + peer_info.port);
 
                             oos = new ObjectOutputStream(clientSocket.getOutputStream());
-                            oos.writeObject(peersInNetwork);
+                            oos.writeObject(peersInNetwork.Get());
 
                             peersInNetwork.Add(peer_info);
                         }

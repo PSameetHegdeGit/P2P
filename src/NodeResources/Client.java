@@ -13,27 +13,36 @@ public class Client {
     protected PrintWriter out;
     protected BufferedReader in;
 
-    int portno;
+    private int portno;
 
-    public Client(PeersInNetwork peersInNetwork){
+    public Client(PeersInNetwork peersInNetwork)
+    {
         this.peersInNetwork = peersInNetwork;
     }
 
+    public int GetPortNo(){
+        return this.portno;
+    }
 
-    public void startConnection(String ip, int port){
-        try{
+    public void startConnection(String ip, int port)
+    {
+        try
+        {
             clientSocket = new Socket(ip, port);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         }
-        catch(IOException e){
+        catch(IOException e)
+        {
             e.printStackTrace();
         }
     }
 
 
-    public void stopConnection(){
-        try{
+    public void stopConnection()
+    {
+        try
+        {
             in.close();
             out.close();
             clientSocket.close();
@@ -43,14 +52,16 @@ public class Client {
         }
     }
 
-    public void Broadcast(){
+    public void Broadcast()
+    {
         ArrayList<Tuple<String, Integer>> peersInNetwork = this.peersInNetwork.Get();
-        peersInNetwork.forEach((peer_info) -> new Thread(new BroadcastWrapper(this, peer_info)).start());
+        peersInNetwork.forEach((peer_info) -> new Thread(new ThreadedMessageSender(this, peer_info)).start());
     }
 
 
 
-    public void sendMessage(int type){
+    public void sendMessage(int type)
+    {
 
         /*
             if type = 0, broadcast
@@ -63,8 +74,10 @@ public class Client {
         String line;
         ObjectOutputStream oos;
 
-        try{
-            switch(type){
+        try
+        {
+            switch(type)
+            {
                 case 0:
 
                     System.out.println("Sending Message!");
@@ -123,7 +136,8 @@ public class Client {
             }
 
         }
-        catch(IOException e){
+        catch(IOException e)
+        {
             e.printStackTrace();
         }
 
