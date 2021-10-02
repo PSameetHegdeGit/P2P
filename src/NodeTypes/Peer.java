@@ -2,7 +2,7 @@ package NodeTypes;
 
 import java.io.*;
 
-import ClientCommands.Connect;
+import ClientCommands.SendMessage;
 import NodeResources.*;
 
 public class Peer implements Runnable{
@@ -20,7 +20,7 @@ public class Peer implements Runnable{
         Peer p = new Peer(client, server);
 
         p._client.startConnection("localhost", ConnectingServer.GetConnectingServerPortNumber());
-        p._client.sendMessage(3);
+        p._client.StartupForNode();
 
         new Thread(p).start();
 
@@ -57,8 +57,8 @@ public class Peer implements Runnable{
 
             try {
                 switch(br.readLine()){
-                    case "Connect":
-                        new Connect(this, null, null).Execute();
+                    case "SendMessage":
+                        new SendMessage(this.GetClient()).Execute();
 
                     case "Broadcast":
                         _client.Broadcast();

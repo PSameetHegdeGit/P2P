@@ -1,17 +1,19 @@
 package NodeResources;
 
+import Interfaces.IClient;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Client {
+public class Client implements IClient {
 
 
     public PeersInNetwork peersInNetwork;
 
-    protected Socket clientSocket;
-    protected PrintWriter out;
-    protected BufferedReader in;
+    private Socket clientSocket;
+    private PrintWriter out;
+    private BufferedReader in;
 
     private int portno;
 
@@ -20,8 +22,17 @@ public class Client {
         this.peersInNetwork = peersInNetwork;
     }
 
-    public int GetPortNo(){
+    public int GetPortNo()
+    {
         return this.portno;
+    }
+
+    public PrintWriter GetOutputStream(){
+        return this.out;
+    }
+
+    public BufferedReader GetInputStream(){
+        return this.in;
     }
 
     public void startConnection(String ip, int port)
@@ -50,6 +61,32 @@ public class Client {
         catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void StartupForNode()
+    {
+        out.println("startup");
+
+
+        try{
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+
+            System.out.println("Enter Port no: ");
+            portno = Integer.parseInt(br.readLine());
+
+            oos.writeObject(new Tuple<>(clientSocket.getInetAddress().getHostAddress(), portno));
+            ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+            //Unchecked Type Exception
+            peersInNetwork.Set((ArrayList<Tuple<String, Integer>>) ois.readObject());
+
+            oos.close();
+            ois.close();
+        }
+        catch(ClassNotFoundException | IOException e){
+            e.printStackTrace();
+        }
+
     }
 
     public void Broadcast()
@@ -99,38 +136,6 @@ public class Client {
                     break;
 
                 case 2:
-                    System.out.println("Enter message to Send:");
-                    br = new BufferedReader(new InputStreamReader(System.in));
-                    line = br.readLine();
-                    out.println(line);
-                    System.out.println("Response: " + in.readLine());
-                    break;
-
-                case 3:
-                    out.println("startup");
-
-                    br = new BufferedReader(new InputStreamReader(System.in));
-                    oos = new ObjectOutputStream(clientSocket.getOutputStream());
-
-                    System.out.println("Enter Port no: ");
-                    portno = Integer.parseInt(br.readLine());
-
-                    oos.writeObject(new Tuple<>(clientSocket.getInetAddress().getHostAddress(), portno));
-
-                    try{
-                        ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
-
-                        //Unchecked Type Exception
-                        peersInNetwork.Set((ArrayList<Tuple<String, Integer>>) ois.readObject());
-
-                        ois.close();
-                    }
-                    catch(ClassNotFoundException e){
-                        e.printStackTrace();
-                    }
-
-                    oos.close();
-                    break;
 
 
             }
