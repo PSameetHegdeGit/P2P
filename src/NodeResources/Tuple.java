@@ -1,3 +1,5 @@
+package NodeResources;
+
 import java.io.Serializable;
 
 public class Tuple<X, Y> implements Serializable {
