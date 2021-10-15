@@ -3,36 +3,20 @@ package NodeResources;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import Interfaces.IClientHandler;
 import Interfaces.IServer;
 
 public class Server implements IServer {
 
 
     private PeersInNetwork peersInNetwork;
-    protected ServerSocket serverSocket;
+    private ServerSocket serverSocket;
 
     public Server (PeersInNetwork peersInNetwork)
     {
         this.peersInNetwork = peersInNetwork;
     }
-
-    /*public static int SpecifyServerPortNo()
-    {
-        System.out.println("Enter Port Number for Server: ");
-        BufferedReader portReader = new BufferedReader(new InputStreamReader(System.in));
-
-        int portno = 0;
-
-        try {
-            portno = Integer.parseInt(portReader.readLine());
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-        System.out.println(portno);
-
-        return portno;
-    }*/
 
     @Override
     public void StartServer(int portno)
@@ -42,7 +26,9 @@ public class Server implements IServer {
             serverSocket = new ServerSocket(portno);
 
             while(true)
+            {
                 new ClientHandler(serverSocket.accept(), peersInNetwork).start();
+            }
         }
         catch(IOException e){
             e.printStackTrace();
@@ -61,8 +47,7 @@ public class Server implements IServer {
         }
     }
 
-    public class ClientHandler extends Thread
-    {
+    private class ClientHandler extends Thread implements IClientHandler {
 
         private Socket clientSocket;
         private PrintWriter out;
@@ -70,95 +55,111 @@ public class Server implements IServer {
         private PeersInNetwork peersInNetwork;
 
 
-
-        public ClientHandler(Socket socket, PeersInNetwork peersInNetwork)
-        {
+        public ClientHandler(Socket socket, PeersInNetwork peersInNetwork) {
             this.clientSocket = socket;
             this.peersInNetwork = peersInNetwork;
         }
 
-        public void run(){
+        public void run() {
 
             ObjectOutputStream oos;
             ObjectInputStream ois;
 
-            try
-            {
+            try {
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                 String line = in.readLine();
 
                 System.out.println("Received Message: " + line);
 
-                switch(line)
-                {
+                switch (line) {
                     case "broadcast":
-                        System.out.println("RECEIVED BROADCAST!");
-//                        ois = new ObjectInputStream(clientSocket.getInputStream());
-
-
-                        try
-                        {
-//                            NodeResources.Tuple<String, Integer> peer_info = (NodeResources.Tuple <String, Integer>) ois.readObject();
-//                            System.out.println("client peer info: " + peer_info.host + " " + peer_info.port);
-//                            peers_in_network.add(peer_info);
-                            out.println("SERVER " + clientSocket.getInetAddress().getHostName() + " " + clientSocket.getPort() + " RECEIVED YOUR INFO");
-
-                        }
-//                        catch(ClassNotFoundException e){
-//                            e.printStackTrace();
-//                        }
-                        catch(Exception e)
-                        {
-                            e.printStackTrace();
-                        }
+                        BroadcastHandler();
                         break;
 
                     case "getArraylist":
-                        System.out.println("WILL GET ARRAYLIST!");
-                        oos = new ObjectOutputStream(clientSocket.getOutputStream());
-                        oos.writeObject(peersInNetwork);
+                        GetArrayList();
                         break;
 
                     case "startup":
-                        System.out.println("FOR STARTUP!");
-                        ois = new ObjectInputStream(clientSocket.getInputStream());
-                        try{
-                            Tuple<String, Integer> peer_info = (Tuple<String, Integer>) ois.readObject();
-
-//                            System.out.println("client peer info: " + peer_info.host + " " + peer_info.port);
-
-                            oos = new ObjectOutputStream(clientSocket.getOutputStream());
-                            oos.writeObject(peersInNetwork.Get());
-
-                            peersInNetwork.Add(peer_info);
-                        }
-                        catch(ClassNotFoundException e){
-                            e.printStackTrace();
-                        }
+                        Startup();
                         break;
 
                     default:
-                        out.println("Message Received: " + line);
-
+                        MessageHandler(line);
                 }
 
-            }
-            catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
         }
 
 
+        @Override
+        public void BroadcastHandler() {
+            System.out.println("RECEIVED BROADCAST!");
+//                        ois = new ObjectInputStream(clientSocket.getInputStream());
+
+
+            try {
+//                            NodeResources.Tuple<String, Integer> peer_info = (NodeResources.Tuple <String, Integer>) ois.readObject();
+//                            System.out.println("client peer info: " + peer_info.host + " " + peer_info.port);
+//                            peers_in_network.add(peer_info);
+                out.println("SERVER " + clientSocket.getInetAddress().getHostName() + " " + clientSocket.getPort() + " RECEIVED YOUR INFO");
+
+            }
+//                        catch(ClassNotFoundException e){
+//                            e.printStackTrace();
+//                        }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        @Override
+        public void MessageHandler(String message) {
+            out.println("Message Received: " + message);
+
+        }
+
+        @Override
+        public void Startup() {
+            System.out.println("FOR STARTUP!");
+            try {
+                ObjectInputStream ois = new ObjectInputStream(clientSocket.getInputStream());
+                Tuple<String, Integer> peer_info = (Tuple<String, Integer>) ois.readObject();
+                ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+                oos.writeObject(peersInNetwork.Get());
+
+                peersInNetwork.Add(peer_info);
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void GetArrayList() {
+            System.out.println("WILL GET ARRAYLIST!");
+            try {
+                ObjectOutputStream oos = new ObjectOutputStream(clientSocket.getOutputStream());
+                oos.writeObject(peersInNetwork);
+            }
+            catch(IOException e){
+                e.printStackTrace();
+            }
+
+        }
     }
-
-
-
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+

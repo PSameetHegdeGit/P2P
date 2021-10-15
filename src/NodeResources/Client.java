@@ -89,13 +89,6 @@ public class Client implements IClient {
 
     }
 
-    public void Broadcast()
-    {
-        ArrayList<Tuple<String, Integer>> peersInNetwork = this.peersInNetwork.Get();
-        peersInNetwork.forEach((peer_info) -> new Thread(new ThreadedMessageSender(this, peer_info)).start());
-    }
-
-
 
     public void sendMessage(int type)
     {
@@ -134,9 +127,6 @@ public class Client implements IClient {
                     out.println("getArraylist");
                     System.out.println("Response: " + in.readLine());
                     break;
-
-                case 2:
-
 
             }
 

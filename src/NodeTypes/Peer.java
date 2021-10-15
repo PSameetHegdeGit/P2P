@@ -2,7 +2,7 @@ package NodeTypes;
 
 import java.io.*;
 
-import ClientCommands.SendMessage;
+import ClientCommands.*;
 import NodeResources.*;
 
 public class Peer implements Runnable{
@@ -59,9 +59,10 @@ public class Peer implements Runnable{
                 switch(br.readLine()){
                     case "SendMessage":
                         new SendMessage(this.GetClient()).Execute();
+                        break;
 
                     case "Broadcast":
-                        _client.Broadcast();
+                        new Broadcast(_client).Execute();
                         break;
 
                     case "output peers":
