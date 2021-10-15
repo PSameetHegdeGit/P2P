@@ -62,7 +62,7 @@ public class Peer implements Runnable{
                         break;
 
                     case "Broadcast":
-                        new Broadcast(_client);
+                        new Broadcast(_client).Execute();
                         break;
 
                     case "output peers":
